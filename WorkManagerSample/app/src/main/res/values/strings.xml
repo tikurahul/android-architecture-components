@@ -42,4 +42,7 @@
         <![CDATA[Stock Photos by <a href="https://www.flickr.com/photos/romainguy">Romain Guy</a>.
         CC2 License.]]>
     </string>
+    <!-- menu -->
+    <string name="enqueue_periodic_work_request">Enqueue Periodic Work</string>
+    <string name="clear_work_requests">Clear Work Requests</string>
 </resources>

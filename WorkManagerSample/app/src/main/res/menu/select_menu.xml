@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/enqueue_periodic_work_request"
+          android:icon="@android:drawable/ic_input_add"
+          android:title="@string/enqueue_periodic_work_request" />
+
+    <item android:id="@+id/clear_work_requests"
+          android:icon="@android:drawable/ic_menu_delete"
+          android:title="@string/clear_work_requests" />
+</menu>

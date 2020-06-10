@@ -28,18 +28,24 @@ import android.text.Html
 import android.text.Spanned
 import android.text.method.LinkMovementMethod
 import android.util.Log
+import android.view.Menu
+import android.view.MenuItem
 import android.view.View
-import android.widget.TextView
+import android.widget.Toast
 import androidx.annotation.VisibleForTesting
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
+import androidx.work.ExistingPeriodicWorkPolicy
+import androidx.work.PeriodicWorkRequestBuilder
+import androidx.work.WorkManager
 import com.example.background.databinding.ActivitySelectBinding
+import com.example.background.workers.PeriodicNotificationWorker
+import com.example.background.workers.PeriodicNotificationWorker.Companion.UNIQUE_NAME
 import com.google.android.material.snackbar.Snackbar
-import kotlinx.android.synthetic.main.activity_select.credits
-import kotlinx.android.synthetic.main.activity_select.selectImage
-import kotlinx.android.synthetic.main.activity_select.selectStockImage
-import java.util.ArrayList
+import kotlinx.android.synthetic.main.activity_select.*
+import java.util.*
+import java.util.concurrent.TimeUnit
 
 /**
  * Helps select an image for the [FilterActivity] and handles permission requests.
@@ -115,6 +121,32 @@ class SelectImageActivity : AppCompatActivity() {
         // Check if permissions were granted after a permissions request flow.
         if (requestCode == REQUEST_CODE_PERMISSIONS) {
             requestPermissionsIfNecessary() // no-op if permissions are granted already.
+        }
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.select_menu, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        return when(item.itemId) {
+            R.id.enqueue_periodic_work_request -> {
+                val request = PeriodicWorkRequestBuilder<PeriodicNotificationWorker>(15, TimeUnit.MINUTES)
+                        .build()
+
+                WorkManager.getInstance(applicationContext)
+                        .enqueueUniquePeriodicWork(UNIQUE_NAME, ExistingPeriodicWorkPolicy.REPLACE, request)
+                true
+            }
+            R.id.clear_work_requests -> {
+                // TODO: Ideally use a coroutine context and call await()
+                WorkManager.getInstance(applicationContext).cancelAllWork()
+                WorkManager.getInstance(applicationContext).pruneWork()
+                Toast.makeText(this, "Cleared all Work Requests", Toast.LENGTH_SHORT).show()
+                true
+            }
+            else -> super.onOptionsItemSelected(item)
         }
     }
 
